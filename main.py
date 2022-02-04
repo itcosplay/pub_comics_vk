@@ -6,7 +6,6 @@ import random
 from environs import Env
 
 
-
 def get_comics():
     last_comics_num = get_last_comics_num()
     random_comics_num = random.randint(1, last_comics_num)
@@ -23,7 +22,8 @@ def get_comics():
     comics_img_name = get_filename_from_url(comics_img_url)
     comics_img = get_image_by_url(comics_img_url)
 
-    save_image(comics_img, comics_img_name)
+    with open(comics_img_name, 'wb') as file:
+        file.write(comics_img)
 
     return comics_img_name, autor_comment
 
@@ -42,11 +42,6 @@ def get_image_by_url(url):
     response.raise_for_status()
 
     return response.content
-
-
-def save_image(image, filename):
-    with open(filename, 'wb') as file:
-        file.write(image)
 
 
 def get_filename_from_url(url: str):
