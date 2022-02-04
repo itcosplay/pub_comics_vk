@@ -81,19 +81,19 @@ def upload_image(url, filename):
     upload_data = response.json()
 
     server = upload_data['server']
-    hash = upload_data['hash']
+    img_hash = upload_data['hash']
     photo = upload_data['photo']
 
-    return server, hash, photo
+    return server, img_hash, photo
 
 
-def save_wall_image(token, group_id, server, hash, photo):
+def save_wall_image(token, group_id, server, img_hash, photo):
     url = 'https://api.vk.com/method/photos.saveWallPhoto'
     payload = {
         'access_token': token,
         'group_id': group_id,
         'server': server,
-        'hash': hash,
+        'hash': img_hash,
         'photo': photo,
         'v': '5.131'
     }
@@ -135,7 +135,7 @@ def main():
         file_name, autor_comment = get_random_comics()
 
         upload_url = get_upload_url(vk_token, group_id)
-        server, hash, photo = upload_image(upload_url, file_name)
+        server, img_hash, photo = upload_image(upload_url, file_name)
     finally:
         os.remove(file_name)
 
@@ -143,7 +143,7 @@ def main():
         vk_token,
         group_id,
         server,
-        hash,
+        img_hash,
         photo
     )
     post_image_on_the_wall(
