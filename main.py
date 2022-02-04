@@ -60,7 +60,6 @@ def get_upload_url(token, group_id):
 
     response = requests.get(url, params=payload)
     response.raise_for_status()
-
     server_data = response.json()['response']
 
     upload_url = server_data['upload_url']
@@ -132,10 +131,14 @@ def main():
     vk_token = env('VK_TOKEN')
     group_id = env('GROUP_ID')
 
-    file_name, autor_comment = get_random_comics()
+    try:
+        file_name, autor_comment = get_random_comics()
 
-    upload_url = get_upload_url(vk_token, group_id)
-    server, hash, photo = upload_image(upload_url, file_name)
+        upload_url = get_upload_url(vk_token, group_id)
+        server, hash, photo = upload_image(upload_url, file_name)
+    finally:
+        os.remove(file_name)
+
     owner_id, image_id = save_wall_image(
         vk_token,
         group_id,
