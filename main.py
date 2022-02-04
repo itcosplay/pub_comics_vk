@@ -6,32 +6,6 @@ import random
 from environs import Env
 
 
-def main():
-    env = Env()
-    env.read_env()
-
-    vk_token = env('VK_TOKEN')
-    group_id = env('GROUP_ID')
-
-    file_name, autor_comment = get_comics()
-
-    upload_url = get_upload_server_data(vk_token, group_id)
-    server, hash, photo = upload_image(upload_url, file_name)
-    owner_id, image_id = save_wall_image(
-        vk_token,
-        group_id,
-        server,
-        hash,
-        photo
-    )
-    post_image_on_the_wall(
-        vk_token,
-        group_id,
-        owner_id,
-        image_id,
-        autor_comment
-    )
-
 
 def get_comics():
     last_comics_num = get_last_comics_num()
@@ -154,6 +128,33 @@ def post_image_on_the_wall(token, group_id, owner_id, image_id, comment):
 
     response = requests.get(url, params=payload)
     response.raise_for_status()
+
+
+def main():
+    env = Env()
+    env.read_env()
+
+    vk_token = env('VK_TOKEN')
+    group_id = env('GROUP_ID')
+
+    file_name, autor_comment = get_comics()
+
+    upload_url = get_upload_server_data(vk_token, group_id)
+    server, hash, photo = upload_image(upload_url, file_name)
+    owner_id, image_id = save_wall_image(
+        vk_token,
+        group_id,
+        server,
+        hash,
+        photo
+    )
+    post_image_on_the_wall(
+        vk_token,
+        group_id,
+        owner_id,
+        image_id,
+        autor_comment
+    )
 
 
 if __name__ == '__main__':
