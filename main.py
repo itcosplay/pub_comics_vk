@@ -6,7 +6,7 @@ import random
 from environs import Env
 
 
-def get_comics():
+def get_random_comics():
     last_comics_num = get_last_comics_num()
     random_comics_num = random.randint(1, last_comics_num)
     url = f'https://xkcd.com/{random_comics_num}/info.0.json'
@@ -132,7 +132,7 @@ def main():
     vk_token = env('VK_TOKEN')
     group_id = env('GROUP_ID')
 
-    file_name, autor_comment = get_comics()
+    file_name, autor_comment = get_random_comics()
 
     upload_url = get_upload_server_data(vk_token, group_id)
     server, hash, photo = upload_image(upload_url, file_name)
