@@ -50,7 +50,7 @@ def get_filename_from_url(url: str):
     return os.path.split(img_path)[1]
 
 
-def get_upload_server_data(token, group_id):
+def get_upload_url(token, group_id):
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
     payload = {
         'access_token': token,
@@ -134,7 +134,7 @@ def main():
 
     file_name, autor_comment = get_random_comics()
 
-    upload_url = get_upload_server_data(vk_token, group_id)
+    upload_url = get_upload_url(vk_token, group_id)
     server, hash, photo = upload_image(upload_url, file_name)
     owner_id, image_id = save_wall_image(
         vk_token,
