@@ -1,5 +1,4 @@
 import os
-import urllib
 import requests
 import random
 
@@ -19,13 +18,12 @@ def get_random_comics():
     comics_img_url = comics_data['img']
     autor_comment = comics_data['alt']
 
-    comics_img_name = get_filename_from_url(comics_img_url)
     comics_img = get_image_by_url(comics_img_url)
 
-    with open(comics_img_name, 'wb') as file:
+    with open(f'temp_img.png', 'wb') as file:
         file.write(comics_img)
 
-    return comics_img_name, autor_comment
+    return autor_comment
 
 
 def get_last_comics_num():
@@ -42,12 +40,6 @@ def get_image_by_url(url):
     response.raise_for_status()
 
     return response.content
-
-
-def get_filename_from_url(url: str):
-    img_path = urllib.parse.urlsplit(url).path
-
-    return os.path.split(img_path)[1]
 
 
 def get_upload_url(token, group_id):
@@ -67,7 +59,7 @@ def get_upload_url(token, group_id):
     return upload_url
 
 
-def upload_image(url, filename):
+def upload_image(url, filename='temp_img.png'):
     with open(f'{filename}', 'rb') as file:
         files = {
             'photo': file,
@@ -79,7 +71,6 @@ def upload_image(url, filename):
     os.remove(filename)
 
     upload_data = response.json()
-
     server = upload_data['server']
     img_hash = upload_data['hash']
     photo = upload_data['photo']
@@ -100,7 +91,6 @@ def save_wall_image(token, group_id, server, img_hash, photo):
 
     response = requests.get(url, params=payload)
     response.raise_for_status()
-
     image_data = response.json()['response'][0]
 
     owner_id = image_data['owner_id']
@@ -132,12 +122,13 @@ def main():
     group_id = env('GROUP_ID')
 
     try:
-        file_name, autor_comment = get_random_comics()
+        autor_comment = get_random_comics()
 
         upload_url = get_upload_url(vk_token, group_id)
-        server, img_hash, photo = upload_image(upload_url, file_name)
+        server, img_hash, photo = upload_image(upload_url)
     finally:
-        os.remove(file_name)
+        if os.path.isfile('temp_img.png'):
+            os.remove('temp_img.png')
 
     owner_id, image_id = save_wall_image(
         vk_token,
