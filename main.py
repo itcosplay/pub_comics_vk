@@ -52,7 +52,7 @@ def get_upload_url(token, group_id):
 
     response = requests.get(url, params=payload)
     response.raise_for_status()
-    server_data = response.json()['response']
+    server_data = raise_if_vk_error(response)['response']
 
     upload_url = server_data['upload_url']
 
@@ -70,7 +70,8 @@ def upload_image(url, filename='temp_img.png'):
 
     os.remove(filename)
 
-    upload_data = response.json()
+    upload_data = raise_if_vk_error(response)
+
     server = upload_data['server']
     img_hash = upload_data['hash']
     photo = upload_data['photo']
@@ -91,7 +92,7 @@ def save_wall_image(token, group_id, server, img_hash, photo):
 
     response = requests.get(url, params=payload)
     response.raise_for_status()
-    image_data = response.json()['response'][0]
+    image_data = raise_if_vk_error(response)['response'][0]
 
     owner_id = image_data['owner_id']
     image_id = image_data['id']
@@ -112,6 +113,16 @@ def post_image_on_the_wall(token, group_id, owner_id, image_id, comment):
 
     response = requests.get(url, params=payload)
     response.raise_for_status()
+    raise_if_vk_error(response)
+
+
+def raise_if_vk_error(response):
+    response_data = response.json()
+    
+    if response_data.get('error'):
+        raise requests.exceptions.ContentDecodingError
+    
+    return response_data
 
 
 def main():
