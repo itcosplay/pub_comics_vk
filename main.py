@@ -76,8 +76,6 @@ def upload_image(url, filename):
         response = requests.post(url, files=files)
         response.raise_for_status()
 
-    os.remove(filename)
-
     upload_data = response.json()
 
     server = upload_data['server']
