@@ -5,6 +5,13 @@ import random
 from environs import Env
 
 
+class VKError(Exception):
+    def __init__(self, response_data):
+        self.error_msg = response_data['error']['error_msg']
+
+        super().__init__(self.error_msg)
+
+
 def get_random_comics():
     last_comics_num = get_last_comics_num()
     random_comics_num = random.randint(1, last_comics_num)
@@ -118,12 +125,12 @@ def post_image_on_the_wall(token, group_id, owner_id, image_id, comment):
 
 
 def raise_if_vk_error(response):
-    response_data = response.json()
+    vk_response_data = response.json()
     
-    if response_data.get('error'):
-        raise requests.exceptions.ContentDecodingError
+    if vk_response_data.get('error'):
+        raise VKError(vk_response_data)
     
-    return response_data
+    return vk_response_data
 
 
 def main():
