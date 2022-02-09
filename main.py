@@ -19,11 +19,12 @@ def get_random_comics():
     autor_comment = comics_data['alt']
 
     comics_img = get_image_by_url(comics_img_url)
+    file_name = 'temp_img.png'
 
-    with open(f'temp_img.png', 'wb') as file:
+    with open(file_name, 'wb') as file:
         file.write(comics_img)
 
-    return autor_comment
+    return autor_comment, file_name
 
 
 def get_last_comics_num():
@@ -59,7 +60,7 @@ def get_upload_url(token, group_id):
     return upload_url
 
 
-def upload_image(url, filename='temp_img.png'):
+def upload_image(url, filename):
     with open(f'{filename}', 'rb') as file:
         files = {
             'photo': file,
@@ -133,13 +134,13 @@ def main():
     group_id = env('GROUP_ID')
 
     try:
-        autor_comment = get_random_comics()
+        autor_comment, file_name = get_random_comics()
 
         upload_url = get_upload_url(vk_token, group_id)
         server, img_hash, photo = upload_image(upload_url)
     finally:
-        if os.path.isfile('temp_img.png'):
-            os.remove('temp_img.png')
+        if os.path.isfile(file_name):
+            os.remove(file_name)
 
     owner_id, image_id = save_wall_image(
         vk_token,
